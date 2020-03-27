@@ -1,0 +1,22 @@
+{
+  "name": "movie-db-app",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd frontend && yarn start",
+    "server": "nodemon server.js",
+    "start": "concurrently \"yarn server\" \"yarn client\"",
+    "npm-dev": "concurrently \"npm run server\" \"npm run npm-client\"",
+    "npm-client": "cd frontend && npm run start"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "nodemon": "^1.19.1",
+    "react-router-dom": "^5.0.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "concurrently": "^4.0.1"
+  }
+}
