@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import MovieList from './components/MovieList';
 import './App.css';
+import debounce from './utils';
 
 class App extends Component {
   state = {
@@ -19,6 +20,17 @@ class App extends Component {
       .finally(() => {
         this.setState({ loading: false });
       });
+
+    const handleScroll = evt => {
+      this.handleScrollNearEnd(
+        document.documentElement.scrollHeight,
+        window.pageYOffset
+      );
+    };
+
+    const debouncedhandleScroll = debounce(handleScroll.bind(this), 100);
+
+    window.addEventListener('scroll', debouncedhandleScroll);
   }
 
   fetchPopular = async page => {
@@ -28,6 +40,25 @@ class App extends Component {
     if (response.status !== 200) throw Error(body.message);
 
     return body;
+  };
+
+  handleScrollNearEnd = (scrollHeight, pageOffset) => {
+    const threshold = 0.5;
+    if (pageOffset / scrollHeight > threshold) {
+      const nextPage = this.state.page + 1;
+      this.setState({ loading: true });
+      this.fetchPopular(nextPage)
+        .then(resp => {
+          const previousList = this.state.list;
+          this.setState({
+            page: nextPage,
+            list: [...previousList, ...resp.results]
+          });
+        })
+        .finally(() => {
+          this.setState({ loading: false });
+        });
+    }
   };
 
   handleSearch = async e => {
