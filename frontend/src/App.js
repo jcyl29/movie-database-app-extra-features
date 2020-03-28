@@ -61,8 +61,7 @@ class App extends Component {
     }
   };
 
-  handleSearch = async e => {
-    const query = e.target.value;
+  handleSearch = async query => {
     const response = await fetch(
       `http://localhost:5000/api/search/movie/${query}`,
       {
@@ -76,6 +75,10 @@ class App extends Component {
     const body = await response.json();
     this.setState({ list: body.results });
   };
+
+  handleSearchOnChange = debounce(value => {
+    this.handleSearch(value);
+  }, 500);
 
   handleNext = () => {
     if (this.state.page === this.state.pageCount) {
@@ -144,7 +147,8 @@ class App extends Component {
           type="text"
           placeholder="Search movies..."
           className="search"
-          onChange={this.handleSearch}
+          // https://medium.com/trabe/react-syntheticevent-reuse-889cd52981b6
+          onChange={({ target: { value } }) => this.handleSearchOnChange(value)}
         />
 
         <MovieList list={list} />
